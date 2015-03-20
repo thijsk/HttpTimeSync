@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product Id="*" Name="HttpTimeSyncSetup" Language="1033" Version="1.0.0.0" Manufacturer="Trilobit BV" UpgradeCode="2497fbec-501b-4e37-8323-ce02960a23e9">
+    <Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine"  Platform="x64" />
+
+    <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+    <MediaTemplate EmbedCab="yes" />
+
+    <Icon Id="icon.ico" SourceFile="icon.ico"/>
+    <Property Id="ARPPRODUCTICON" Value="icon.ico" />
+    
+    <Feature Id="ProductFeature" Title="HttpTimeSyncSetup" Level="1">
+      <ComponentGroupRef Id="ProductComponents" />
+    </Feature>
+
+
+    <UIRef Id="UserInterface"/>
+    
+  </Product>
+
+  <Fragment>
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFiles64Folder">
+        <Directory Id="Trilobit" Name="Trilobit BV">
+          <Directory Id="INSTALLFOLDER" Name="HttpTimeSync" />
+        </Directory>
+      </Directory>
+    </Directory>
+  </Fragment>
+
+  <Fragment>
+    <ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
+      <Component Id="ProductComponent" Guid="A8A7A12C-D1C5-40ED-B0D2-2CD4AFF2E2EE" Win64='yes'>
+         
+         <File Source="$(var.HttpTimeSyncService.TargetDir)$(var.HttpTimeSyncService.TargetFileName).config" />
+         <File Source="$(var.HttpTimeSyncService.TargetDir)log4net.dll" />
+         <File Source="$(var.HttpTimeSyncConsole.TargetPath)" />
+         <File Source="$(var.HttpTimeSync.TargetPath)" />
+         <File Source="$(var.NtpServer.TargetPath)" />
+        <File Source="$(var.HttpTimeSyncService.TargetPath)" KeyPath="yes"  />
+        <ServiceInstall
+              Id="ServiceInstaller"
+              Type="ownProcess"
+              Vital="yes"
+              Name="HttpTimeSyncService"
+              DisplayName="Http Time Sync Service"
+              Description="Syncs the system clock to a list of http servers"
+              Start="auto"
+              Account="LocalSystem"
+              ErrorControl="ignore"
+              Interactive="no"
+              />
+        <ServiceControl Id="StartService" Start="install" Stop="both" Remove="uninstall" Name="HttpTimeSyncService" Wait="yes" />
+      </Component>
+    </ComponentGroup>
+  </Fragment>
+
+  <Fragment>
+    <UI Id="UserInterface">
+      <Property Id="WIXUI_INSTALLDIR" Value="TARGETDIR" />
+      <Property Id="WixUI_Mode" Value="Custom" />
+
+      <TextStyle Id="WixUI_Font_Normal" FaceName="Tahoma" Size="8" />
+      <TextStyle Id="WixUI_Font_Bigger" FaceName="Tahoma" Size="9" Bold="yes" />
+      <TextStyle Id="WixUI_Font_Title"  FaceName="Tahoma" Size="9" Bold="yes" />
+
+      <Property Id="DefaultUIFont" Value="WixUI_Font_Normal" />
+
+      <DialogRef Id="ProgressDlg" />
+      <DialogRef Id="ErrorDlg" />
+      <DialogRef Id="FilesInUse" />
+      <DialogRef Id="FatalError" />
+      <DialogRef Id="UserExit" />
+
+      <Publish Dialog="ExitDialog" Control="Finish" Event="EndDialog" Value="Return" Order="999">1</Publish>
+      <Publish Dialog="WelcomeDlg" Control="Next" Event="EndDialog" Value="Return" Order="2"></Publish>
+
+    </UI>
+    <UIRef Id="WixUI_Common" />
+
+  </Fragment>
+  
+</Wix>
+

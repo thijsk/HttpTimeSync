@@ -1,0 +1,15 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="HttpTimeSync.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="ServerList" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">www.google.com,www.facebook.com,www.google.com,www.youtube.com,www.wikipedia.org,www.nu.nl,www.twitter.com,www.nos.nl,www.bol.com,www.tweakers.net,www.microsoft.com,www.stackoverflow.com,www.bing.com,www.google.nl,www.ebay.com,www.geenstijl.nl</Value>
+    </Setting>
+    <Setting Name="IntervalSecs" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">600</Value>
+    </Setting>
+    <Setting Name="JumpMinutes" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">5</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

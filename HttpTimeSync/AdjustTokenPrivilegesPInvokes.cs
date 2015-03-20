@@ -1,0 +1,75 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.InteropServices;
+using System.Text;
+using System.Threading.Tasks;
+using System.Diagnostics;
+using System.Threading;
+
+namespace HttpTimeSync
+{
+    public class AdjustTokenPrivilegesPInvokes
+    {
+        [StructLayout(LayoutKind.Sequential)]
+        private struct LUID
+        {
+            public uint LowPart;
+            public int HighPart;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        private struct LUID_AND_ATTRIBUTES
+        {
+            public LUID Luid;
+            public UInt32 Attributes;
+        }
+
+        private struct TOKEN_PRIVILEGES
+        {
+            public UInt32 PrivilegeCount;
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 1)]
+            public LUID_AND_ATTRIBUTES[] Privileges;
+        }
+
+        public const string SE_SYSTEMTIME_NAME = "SeSystemTimePrivilege";
+        public const int TOKEN_ADJUST_PRIVILEGES = 0x00000020;
+        public const int TOKEN_QUERY = 0x00000008;
+        public const int SE_PRIVILEGE_ENABLED = 0x00000002;
+
+        [DllImport("advapi32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool AdjustTokenPrivileges(IntPtr TokenHandle, bool DisableAllPrivileges, ref TOKEN_PRIVILEGES NewState, UInt32 Zero, IntPtr Null1, IntPtr Null2);
+
+        [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        private static extern bool OpenProcessToken(int ProcessHandle, int DesiredAccess, out IntPtr tokenhandle);
+
+        [DllImport("kernel32.dll", CharSet = CharSet.Auto)]
+        private static extern int GetCurrentProcess();
+
+        [DllImport("advapi32.dll", CharSet = CharSet.Auto)]
+        private static extern bool LookupPrivilegeValue(string lpsystemname, string lpname, [MarshalAs(UnmanagedType.Struct)] ref LUID lpLuid);
+
+        public static void EnableSetTimePrivileges()
+        {
+            // We must add the set systemtime privilege to the process token or SetTime will fail
+            IntPtr token;
+            var result = OpenProcessToken(GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, out token);
+            Debug.Assert(result, String.Format("OpenProcessToken failed. GetLastError: {0}", Marshal.GetLastWin32Error()));
+
+            LUID luid = new LUID();
+            result = LookupPrivilegeValue(null, SE_SYSTEMTIME_NAME, ref luid);
+            Debug.Assert(result, String.Format("LookupPrivilegeValue failed. GetLastError: {0}", Marshal.GetLastWin32Error()));
+
+            TOKEN_PRIVILEGES tokenPrivs = new TOKEN_PRIVILEGES();
+            tokenPrivs.PrivilegeCount = 1;
+            tokenPrivs.Privileges = new LUID_AND_ATTRIBUTES[1];
+            tokenPrivs.Privileges[0].Luid = luid;
+            tokenPrivs.Privileges[0].Attributes = SE_PRIVILEGE_ENABLED;
+            result = AdjustTokenPrivileges(token, false, ref tokenPrivs, 0, IntPtr.Zero, IntPtr.Zero);
+            Debug.Assert(result, String.Format("AdjustTokenPrivileges failed. GetLastError: {0}", Marshal.GetLastWin32Error()));
+        }
+
+    }
+
+}
