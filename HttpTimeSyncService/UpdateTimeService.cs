@@ -42,10 +42,10 @@ namespace HttpTimeSyncService
             var service = new TimeService(list, log);
             int interval = service.GetInterval();
 
-            Thread.Sleep(10*1000);
 
-            var updateTimeTask = Task.Run(async () => 
+            var updateTimeTask = Task.Run(async () =>
             {
+                await Task.Delay(1000*10, token);
                 while (!token.IsCancellationRequested)
                 {
                     var start = DateTime.UtcNow;
@@ -60,7 +60,7 @@ namespace HttpTimeSyncService
         protected override void OnStop()
         {
             _tokenSource.Cancel();
-
+            TimePInvokes.StopAdjustClockspeed();
             base.OnStop();
         }
     }

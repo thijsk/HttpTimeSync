@@ -78,21 +78,27 @@ namespace HttpTimeSync
             public bool disabled;
         }
 
-        public static ClockAdjust AdjustClockspeed(TimeSpan offset, int updateInterval)
+        const int NanosecondsPerMilisecond = 1000000;
+        
+        public static ClockAdjust AdjustClockspeed(TimeSpan offset, int updateInterval, int adjustFactor)
         {
             var val = new ClockAdjust();
 
             GetSystemTimeAdjustment(out val.adjustment, out val.increment, out val.disabled);
 
-            long offSsetNano = Convert.ToInt64(offset.TotalMilliseconds) * 1000000;
-            long nextNano = (long)updateInterval * 1000000;
+            
+            long offsetNano = Convert.ToInt64(offset.TotalMilliseconds) * NanosecondsPerMilisecond;
+            long nextNano = (long)updateInterval * NanosecondsPerMilisecond;
 
             var intervals = nextNano/val.increment;
-            // fix only one fifth of the offset in this interval
-            val.newadjustment = (uint) ((nextNano + (offSsetNano/5))/intervals);
 
+            uint adjustedIncrement = (uint)((nextNano + (offsetNano / adjustFactor)) / intervals);
+
+            // fix only the adjustFactor of the offset in this interval
+            val.newadjustment = adjustedIncrement;
             var result = SetSystemTimeAdjustment(val.newadjustment, false);
             Debug.Assert(result, String.Format("SetSystemTimeAdjustment failed. GetLastError: {0}", Marshal.GetLastWin32Error()));
+            
             return val;
         }
 

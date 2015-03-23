@@ -13,9 +13,8 @@
       <ComponentGroupRef Id="ProductComponents" />
     </Feature>
 
-
     <UIRef Id="UserInterface"/>
-    
+   
   </Product>
 
   <Fragment>
@@ -32,13 +31,17 @@
     <ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
       <Component Id="ProductComponent" Guid="A8A7A12C-D1C5-40ED-B0D2-2CD4AFF2E2EE" Win64='yes'>
          
-         <File Source="$(var.HttpTimeSyncService.TargetDir)$(var.HttpTimeSyncService.TargetFileName).config" />
-         <File Source="$(var.HttpTimeSyncService.TargetDir)log4net.dll" />
-         <File Source="$(var.HttpTimeSyncConsole.TargetPath)" />
-         <File Source="$(var.HttpTimeSync.TargetPath)" />
-         <File Source="$(var.NtpServer.TargetPath)" />
+        <File Source="$(var.HttpTimeSyncService.TargetDir)log4net.dll" />
+
+        <File Source="$(var.HttpTimeSyncConsole.TargetPath).config" />
+        <File Source="$(var.HttpTimeSyncConsole.TargetPath)" />
+        
+        <File Source="$(var.HttpTimeSync.TargetPath)" />
+        <File Source="$(var.NtpServer.TargetPath)" />
+
+        <File Source="$(var.HttpTimeSyncService.TargetPath).config" />
         <File Source="$(var.HttpTimeSyncService.TargetPath)" KeyPath="yes"  />
-        <ServiceInstall
+         <ServiceInstall
               Id="ServiceInstaller"
               Type="ownProcess"
               Vital="yes"

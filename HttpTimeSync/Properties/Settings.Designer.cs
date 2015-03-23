@@ -52,5 +52,14 @@ namespace HttpTimeSync.Properties {
                 return ((int)(this["JumpMinutes"]));
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("5")]
+        public int AdjustFactor {
+            get {
+                return ((int)(this["AdjustFactor"]));
+            }
+        }
     }
 }

@@ -123,10 +123,16 @@ namespace HttpTimeSync
                 }
                 else
                 {
-                    var result = TimePInvokes.AdjustClockspeed(average, interval);
+                    var adjustFactor = GetAdjustFactor();
+                    var result = TimePInvokes.AdjustClockspeed(average, interval, adjustFactor);
                     Log.InfoFormat("Adjusting clock speed, {0} => {1} ({2} / {3}), disabled {4}", result.adjustment, result.newadjustment, (int) result.newadjustment - (int) result.adjustment, (int) result.newadjustment - (int) result.increment, result.disabled);
                 }
             }
+        }
+
+        private int GetAdjustFactor()
+        {
+            return Settings.Default.AdjustFactor;
         }
 
         private int GetJumpMinutes()

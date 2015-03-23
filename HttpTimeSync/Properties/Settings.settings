@@ -11,5 +11,8 @@
     <Setting Name="JumpMinutes" Type="System.Int32" Scope="Application">
       <Value Profile="(Default)">5</Value>
     </Setting>
+    <Setting Name="AdjustFactor" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">5</Value>
+    </Setting>
   </Settings>
 </SettingsFile>
